@@ -3,20 +3,44 @@ export default class ApiService {
   constructor() {
     this.searchValue = '';
     this.page = 1;
+    this.totalHits = 0;
   }
+
+  //запрос с помощью метода fetch() ----->
+
+  // fetchCards() {
+  //   const url = `https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070&q=${this.searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`;
+
+  //   return fetch(url)
+  //   .then(resp => resp.json())
+  //   .then(info => {
+  //     this.incrementPage();
+
+  //     return info.hits;
+  //   })
+  //   .catch(err => console.log(err));
+
+  // }
+  //  <----------
 
   async fetchCards() {
     const url = `https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070&q=${this.searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`;
 
-    return fetch(url)
-    .then(resp => resp.json())
-    .then(info => {
-      this.page += 1;
+    try {
+      const response = await axios.get(url);
+      const arrayOfObjects = response.data.hits;
+      const totalHits = response.data.total;
+      this.incrementPage();
+      this.totalHits = totalHits;
 
-      return info.hits;
-    })
-    .catch(err => console.log(err));
+      return arrayOfObjects;
+    } catch (error) {
+      console.log('ERROR: ', error);
+    }
+  }
 
+  incrementPage() {
+    this.page += 1;
   }
 
   resetPage() {

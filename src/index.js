@@ -3,8 +3,6 @@ import Notiflix from 'notiflix';
 import ApiService from '../src/js/ApiService.js';
 import Lodash from 'lodash.debounce';
 
-
-
 // const BASE_URL = 'https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070';
 const DEBOUNCE_DELAY = 300;
 
@@ -19,7 +17,7 @@ const apiService = new ApiService();
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 
-// ====> AXIOS <====
+// первоначальная практика с ====> AXIOS <==== (без импорта ApiService)
 
 // async function onFormSubmit(e) {
 //   e.preventDefault();
@@ -53,24 +51,31 @@ refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 //   }
 // }
 
+// --------------------------------------------------->
+
 function onFormSubmit(e) {
   e.preventDefault();
 
   clearRequestedInfo();
 
-  apiService.data = e.currentTarget.elements.searchQuery.value;
+  apiService.data = e.currentTarget.elements.searchQuery.value.trim();
   if (apiService.data === '') {
     return Notiflix.Notify.failure('Please enter your search query.');
   }
 
-  
   apiService.resetPage();
-  apiService.fetchCards().then(renderGalleryCard);
-  apiService.fetchCards().then(array => {if (array.length === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.',
-    );
-  }});
+  apiService.fetchCards().then(array => {
+    if (array.length === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.',
+      );
+    }
+    renderGalleryCard(array);
+
+    if (apiService.page === 2) {
+      return Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
+    }
+  });
 }
 
 function onLoadMore() {

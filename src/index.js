@@ -3,7 +3,7 @@ import Notiflix from 'notiflix';
 import ApiService from '../src/js/ApiService.js';
 import Lodash from 'lodash.debounce';
 
-const axios = require('axios');
+
 
 // const BASE_URL = 'https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070';
 const DEBOUNCE_DELAY = 300;
@@ -15,6 +15,7 @@ const refs = {
 };
 
 const apiService = new ApiService();
+
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 
@@ -54,34 +55,26 @@ refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 
 function onFormSubmit(e) {
   e.preventDefault();
-  // e.currentTarget.reset();
 
-  // const searchWord = e.srcElement[0].value;
+  clearRequestedInfo();
+
   apiService.data = e.currentTarget.elements.searchQuery.value;
+  if (apiService.data === '') {
+    return Notiflix.Notify.failure('Please enter your search query.');
+  }
+
+  
   apiService.resetPage();
-  apiService.fetchCards();
-
-  console.log(apiService.array);
-
-  // //первоначальный вариант
-  // const resp = fetch(`${BASE_URL}&q=${searchWord}&page=1&per_page=40`);
-  // const response = resp.json();
-
-  // if (response.hits.length === 0) {
-  //   Notiflix.Notify.failure(
-  //     'Sorry, there are no images matching your search query. Please try again.',
-  //   );
-  // }
-
-  // const arrayOfObjects = response.hits;
-
-  // renderGalleryCard(arrayOfObjects);
-
-  // console.log(arrayOfObjects);
+  apiService.fetchCards().then(renderGalleryCard);
+  apiService.fetchCards().then(array => {if (array.length === 0) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.',
+    );
+  }});
 }
 
 function onLoadMore() {
-  apiService.fetchCards();
+  apiService.fetchCards().then(renderGalleryCard);
 }
 
 function renderGalleryCard(arrayOfObjects) {
@@ -110,5 +103,9 @@ function renderGalleryCard(arrayOfObjects) {
 </div>`;
     })
     .join('');
-  refs.galleryBlock.insertAdjacentHTML('afterbegin', markup);
+  refs.galleryBlock.insertAdjacentHTML('beforeend', markup);
+}
+
+function clearRequestedInfo() {
+  refs.galleryBlock.innerHTML = '';
 }

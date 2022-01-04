@@ -1,8 +1,13 @@
 .search-form {
+  position: fixed;
+  left: 0;
+  right: 0;
   margin-bottom: 10px;
   padding: 20px;
   background-color: $accentColor;
   text-align: center;
+
+  z-index: 2;
 }
 
 .search-form input {
@@ -21,6 +26,8 @@ button {
 
   background-color: rgb(248, 165, 40);
 
+  cursor: pointer;
+
   transition: background-color $durationTimingFunction;
 
   &:hover,
@@ -30,13 +37,18 @@ button {
 }
 
 .load-more {
+  position: relative;
+  top: 60px;
   display: block;
   margin-top: 20px;
   margin-right: auto;
   margin-left: auto;
+
 }
 
 .gallery {
+  position: relative;
+  top: 70px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;

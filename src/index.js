@@ -10,12 +10,15 @@ const refs = {
   form: document.querySelector('.search-form'),
   galleryBlock: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
+  submitBtn: document.querySelector('[type="submit"]'),
 };
 
 const apiService = new ApiService();
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
+
+refs.loadMoreBtn.classList.add('visually-hidden');
 
 // первоначальная практика с ====> AXIOS <==== (без импорта ApiService)
 
@@ -61,16 +64,19 @@ function onFormSubmit(e) {
   apiService.data = e.currentTarget.elements.searchQuery.value.trim();
   if (apiService.data === '') {
     return Notiflix.Notify.failure('Please enter your search query.');
-  }
+  } 
 
   apiService.resetPage();
   apiService.fetchCards().then(array => {
     if (array.length === 0) {
-      Notiflix.Notify.failure(
+      refs.loadMoreBtn.classList.add('visually-hidden');
+      return Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.',
       );
     }
     renderGalleryCard(array);
+    refs.loadMoreBtn.classList.remove('visually-hidden');
+    // refs.submitBtn.setAttribute('disabled', 'disabled');
 
     if (apiService.page === 2) {
       return Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);

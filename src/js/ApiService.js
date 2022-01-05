@@ -29,13 +29,13 @@ export default class ApiService {
     try {
       const response = await axios.get(url);
       const arrayOfObjects = response.data.hits;
-      const totalHits = response.data.total;
+      const totalHits = response.data.totalHits;
       this.incrementPage();
       this.totalHits = totalHits;
 
       return arrayOfObjects;
     } catch (error) {
-      console.log('ERROR: ', error);
+      console.log('ERROR: ', console.log(error));
     }
   }
 

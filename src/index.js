@@ -5,6 +5,7 @@ import Lodash from 'lodash.debounce';
 
 // const BASE_URL = 'https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070';
 const DEBOUNCE_DELAY = 300;
+let startAmount = 40;
 
 const refs = {
   form: document.querySelector('.search-form'),
@@ -19,42 +20,6 @@ refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 
 refs.loadMoreBtn.classList.add('visually-hidden');
-
-// первоначальная практика с ====> AXIOS <==== (без импорта ApiService)
-
-// async function onFormSubmit(e) {
-//   e.preventDefault();
-// e.currentTarget.reset();
-
-// const searchWord = e.srcElement[0].value;
-// const searchValue = e.currentTarget.elements.searchQuery.value;
-
-//   // const result = await axios.get(`${BASE_URL}${searchWord}&page=1&`);
-//   // console.log(result.data.hits);
-
-// const result = await axios.get(`${BASE_URL}${searchWord}&page=1`, {
-//   params: {
-//     image_type: 'photo',
-//     orientation: 'horizontal',
-//     safesearch: true,
-//     per_page: 40,
-//   },
-// });
-
-// const arrayOfObjects = result.data.hits;
-
-// renderGalleryCard(arrayOfObjects);
-
-// console.log(arrayOfObjects);
-
-//   if (result.data.hits.length === 0) {
-//     Notiflix.Notify.failure(
-//       'Sorry, there are no images matching your search query. Please try again.',
-//     );
-//   }
-// }
-
-// --------------------------------------------------->
 
 function onFormSubmit(e) {
   e.preventDefault();
@@ -74,19 +39,49 @@ function onFormSubmit(e) {
         'Sorry, there are no images matching your search query. Please try again.',
       );
     }
+
     renderGalleryCard(array);
     refs.loadMoreBtn.classList.remove('visually-hidden');
-    // refs.submitBtn.setAttribute('disabled', 'disabled');
-
+    
     if (apiService.page === 2) {
-      return Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
+      Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
+    }   
+    
+    // startAmount += array.length;
+
+    if (array.length < 40) {
+      refs.loadMoreBtn.classList.add('visually-hidden');
+      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
     }
+
   });
 }
 
 function onLoadMore() {
-  apiService.fetchCards().then(renderGalleryCard);
+  apiService.fetchCards().then(array => {
+    renderGalleryCard(array);
+
+    startAmount += array.length;
+
+    if (startAmount === apiService.totalHits) {
+      refs.loadMoreBtn.classList.add('visually-hidden');
+      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+    }
+    
+  });
 }
+
+
+function foo(array) {
+  startAmount += array.length;
+
+  if (startAmount === apiService.totalHits || array.length < 40) {
+    refs.loadMoreBtn.classList.add('visually-hidden');
+    Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+  }
+}
+
+
 
 function renderGalleryCard(arrayOfObjects) {
   const markup = arrayOfObjects

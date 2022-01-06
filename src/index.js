@@ -49,7 +49,7 @@ function onFormSubmit(e) {
     
     // startAmount += array.length;
 
-    if (array.length < 40) {
+    if (array.length < 10) {
       refs.loadMoreBtn.classList.add('visually-hidden');
       Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
     }
@@ -61,24 +61,14 @@ function onLoadMore() {
   apiService.fetchCards().then(array => {
     renderGalleryCard(array);
 
+    
     startAmount += array.length;
-
+    
     if (startAmount === apiService.totalHits) {
       refs.loadMoreBtn.classList.add('visually-hidden');
       Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
     }
-    
   });
-}
-
-
-function foo(array) {
-  startAmount += array.length;
-
-  if (startAmount === apiService.totalHits || array.length < 40) {
-    refs.loadMoreBtn.classList.add('visually-hidden');
-    Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-  }
 }
 
 

@@ -3,7 +3,6 @@ import Notiflix from 'notiflix';
 import ApiService from '../src/js/ApiService.js';
 import Lodash from 'lodash.debounce';
 
-// const BASE_URL = 'https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070';
 const DEBOUNCE_DELAY = 300;
 let startAmount = 40;
 
@@ -23,60 +22,64 @@ refs.loadMoreBtn.classList.add('visually-hidden');
 
 function onFormSubmit(e) {
   e.preventDefault();
-
+  
   clearRequestedInfo();
-
+  
+  
   apiService.data = e.currentTarget.elements.searchQuery.value.trim();
   if (apiService.data === '') {
     return Notiflix.Notify.failure('Please enter your search query.');
   } 
-
+  
   apiService.resetPage();
   apiService.fetchCards().then(array => {
     if (array.length === 0) {
       refs.loadMoreBtn.classList.add('visually-hidden');
       return Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.',
-      );
-    }
-
-    renderGalleryCard(array);
-    refs.loadMoreBtn.classList.remove('visually-hidden');
-    
-    if (apiService.page === 2) {
-      Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
-    }   
-    
-    // startAmount += array.length;
-
-    if (array.length < 10) {
-      refs.loadMoreBtn.classList.add('visually-hidden');
-      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-    }
-
-  });
-}
-
-function onLoadMore() {
-  apiService.fetchCards().then(array => {
-    renderGalleryCard(array);
-
-    
-    startAmount += array.length;
-    
-    if (startAmount === apiService.totalHits) {
-      refs.loadMoreBtn.classList.add('visually-hidden');
-      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-    }
-  });
+        );
+      }
+      
+      
+      renderGalleryCard(array);
+      refs.loadMoreBtn.classList.remove('visually-hidden');
+      
+      if (apiService.page === 2) {
+        Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
+      }   
+      
+      // startAmount += array.length;
+      
+      if (array.length < 40) {
+        refs.loadMoreBtn.classList.add('visually-hidden');
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+      }
+      
+    });
+  }
+  
+  
+  function onLoadMore() {
+    apiService.fetchCards().then(array => {
+      renderGalleryCard(array);
+      
+      
+      startAmount += array.length;
+      
+      if (startAmount === apiService.totalHits) {
+        refs.loadMoreBtn.classList.add('visually-hidden');
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+      }
+    });
 }
 
 
 
 function renderGalleryCard(arrayOfObjects) {
   const markup = arrayOfObjects
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-      return `<div class="photo-card">
+    .map(({ largeImageURL, webformatURL, tags, likes, views, comments, downloads }) => {
+      return `<a href="${largeImageURL} class="gallery-link">
+      <div class="photo-card">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -96,10 +99,12 @@ function renderGalleryCard(arrayOfObjects) {
       <span class="quantity">${downloads}</span>
     </p>
   </div>
-</div>`;
+</div>
+      </a>`;
     })
     .join('');
   refs.galleryBlock.insertAdjacentHTML('beforeend', markup);
+  
 }
 
 function clearRequestedInfo() {

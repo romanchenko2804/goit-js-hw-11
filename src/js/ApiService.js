@@ -24,7 +24,7 @@ export default class ApiService {
   //  <----------
 
   async fetchCards() {
-    const url = `https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070&q=${this.searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=10&page=${this.page}`;
+    const url = `https://pixabay.com/api/?key=25003680-e74f6748a2c57625989dee070&q=${this.searchValue}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`;
 
     try {
       const response = await axios.get(url);
@@ -32,6 +32,8 @@ export default class ApiService {
       const totalHits = response.data.totalHits;
       this.incrementPage();
       this.totalHits = totalHits;
+
+      console.log(arrayOfObjects);
 
       return arrayOfObjects;
     } catch (error) {

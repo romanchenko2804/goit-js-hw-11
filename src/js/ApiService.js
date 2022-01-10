@@ -33,7 +33,7 @@ export default class ApiService {
       this.incrementPage();
       this.totalHits = totalHits;
 
-      console.log(arrayOfObjects);
+      // console.log(arrayOfObjects);
 
       return arrayOfObjects;
     } catch (error) {

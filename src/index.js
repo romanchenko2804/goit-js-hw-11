@@ -20,11 +20,14 @@ refs.loadMoreBtn.addEventListener('click', Lodash(onLoadMore, DEBOUNCE_DELAY));
 
 refs.loadMoreBtn.classList.add('visually-hidden');
 
+
+// 
 function onFormSubmit(e) {
   e.preventDefault();
   
   clearRequestedInfo();
   
+  refs.loadMoreBtn.classList.add('visually-hidden');
   
   apiService.data = e.currentTarget.elements.searchQuery.value.trim();
   if (apiService.data === '') {
@@ -48,21 +51,29 @@ function onFormSubmit(e) {
         Notiflix.Notify.success(`Hooray! We found ${apiService.totalHits} images.`);
       }   
       
-      // startAmount += array.length;
+      // if (apiService.page === 0) {
+      //   refs.loadMoreBtn.classList.add('visually-hidden');
+      // }   
       
       if (array.length < 40) {
         refs.loadMoreBtn.classList.add('visually-hidden');
         Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
       }
+    
+    // if (apiService.) {
+    //     refs.loadMoreBtn.classList.add('visually-hidden');
+    //   }
+    
+    console.log(array);
       
     });
-  }
+}
   
   
   function onLoadMore() {
     apiService.fetchCards().then(array => {
       renderGalleryCard(array);
-      
+
       
       startAmount += array.length;
       
